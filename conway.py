@@ -60,7 +60,7 @@ class Cell:
 		self.x = position % SIZE
 		self.y = position / SIZE
 		self.rect = pygame.Rect([self.x * CELL_SIZE, self.y * CELL_SIZE], [CELL_SIZE, CELL_SIZE])
-		self.blank_rect = pygame.Rect([self.x * CELL_SIZE, self.y * CELL_SIZE], [CELL_SIZE - 1, CELL_SIZE - 1])
+		self.blank_rect = pygame.Rect([self.x * CELL_SIZE + 1, self.y * CELL_SIZE +1], [CELL_SIZE - 1, CELL_SIZE - 1])
 	
 	#Creates a list of neighbors to the cell
 	def neighbors(self):
@@ -89,7 +89,6 @@ def change_ticks(tps):
 	if ticks_per_second > 1 or tps > 0:
 		ticks_per_second += tps
 		skip_ticks = 1000 / ticks_per_second
-		print ticks_per_second
 
 #Ticks the board one iteration forward
 def tick():
@@ -145,7 +144,6 @@ def on_click(position):
 	board[cell_pos].next_alive = not board[cell_pos].alive
 	update()
 			
-change_ticks(4)
 print ""
 print "Conway's Game of Life"
 print "Controls: "
