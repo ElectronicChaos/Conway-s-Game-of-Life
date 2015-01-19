@@ -31,18 +31,18 @@ import pygame, random, sys, time
 #SIZE is the number of rows and columns
 #Each cell will be CELL_SIZE * CELL_SIZE pixels
 SIZE = 50
-CELL_SIZE = 10
+CELL_SIZE = 20
 #Draw a border around cells. Setting this to true may cause performance issues in less powerful machines
 border = True
-
-#TICKS_PERS_SECOND is the number of times per second the game updates
-TICKS_PER_SECOND = 10
-SKIP_TICKS = 1000 / TICKS_PER_SECOND
-next_time = int(round(time.time() * 1000L))
 
 #Colors for filled cells and background
 filled = 219,211,151
 background = 115,115,115
+
+#ticks_per_second is the number of times per second the game updates
+ticks_per_second = 4
+next_time = int(round(time.time() * 1000L))
+skip_ticks = 1000 / ticks_per_second
 
 screen = pygame.display.set_mode([SIZE * CELL_SIZE, SIZE * CELL_SIZE])
 pygame.display.set_caption("Conway's Game of Life")
@@ -83,6 +83,13 @@ for x in range(SIZE * SIZE):
 for c in board:
 	c.neighbors()
 
+def change_ticks(tps):
+	global ticks_per_second
+	global skip_ticks
+	if ticks_per_second > 1 or tps > 0:
+		ticks_per_second += tps
+		skip_ticks = 1000 / ticks_per_second
+		print ticks_per_second
 
 #Ticks the board one iteration forward
 def tick():
@@ -138,11 +145,19 @@ def on_click(position):
 	board[cell_pos].next_alive = not board[cell_pos].alive
 	update()
 			
-#Main game loop
+change_ticks(4)
 print ""
 print "Conway's Game of Life"
-print "Controls: \nEscape key closes program \nSpace key pauses/un-pauses \nR key randomizes board \nC key clears board \nB toggles borders \nClicking on a cell toggles its state"
-	
+print "Controls: "
+print "Escape key closes program"
+print "Space key pauses/un-pauses"
+print "R key randomizes board"
+print "C key clears board"
+print "B toggles borders"
+print "Clicking on a cell toggles its state"
+print "Numkey + and - increase and decrease speed"
+
+#Main game loop
 while is_running:
 	for event in pygame.event.get():
 		if event.type==pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -156,6 +171,10 @@ while is_running:
 				clear()
 			elif event.key == pygame.K_b:
 				border = not border
+			elif event.key == pygame.K_KP_PLUS:
+				change_ticks(1)
+			elif event.key == pygame.K_KP_MINUS:
+				change_ticks(-1)
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			on_click(pygame.mouse.get_pos())
 		
@@ -167,7 +186,7 @@ while is_running:
 		if not is_paused:
 			tick()
 		pygame.display.flip()
-		next_time += SKIP_TICKS
+		next_time += skip_ticks
 
 pygame.quit()
 sys.exit()
